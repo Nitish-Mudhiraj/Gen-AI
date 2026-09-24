@@ -1,16 +1,44 @@
-  import React, { createContext, useState } from 'react'
-  export const DataContext = createContext()
-  const Authcontext = ({children}) => {
+import React, { createContext, useEffect, useState } from "react";
+import { getme } from "../api/auth"; // use your actual auth API path
 
-      const [userr , setuser] = useState(null)
+export const DataContext = createContext();
 
-      const [loading, setLoading] = useState(true)
+const Authcontext = ({ children }) => {
+
+    const [userr, setuser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            try {
+                const response = await getme();
+
+                if (response?.user) {
+                    setuser(response.user);
+                }
+            } catch (err) {
+                console.log("User not logged in");
+                setuser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkUser();
+    }, []);
 
     return (
-      <DataContext.Provider value={{loading , userr , setLoading,setuser}}>
-          {children}
-      </DataContext.Provider>
-    )
-  }
+        <DataContext.Provider
+            value={{
+                loading,
+                userr,
+                setLoading,
+                setuser
+            }}
+        >
+            {children}
+        </DataContext.Provider>
+    );
+};
 
-  export default Authcontext
+export default Authcontext;
