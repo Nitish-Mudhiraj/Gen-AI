@@ -4,58 +4,46 @@ const crypto = require("crypto");
 
 
 // Register
+
+// Register
 async function Register(req, res) {
     try {
         const { username, email, password } = req.body;
 
-        const isUserAlreadyExists = await usermodel.findOne({
-            $or: [{ username }, { email }]
+        // Check if user already exists
+        const existingUser = await usermodel.findOne({
+            $or: [
+                { username },
+                { email }
+            ]
         });
 
-        if (isUserAlreadyExists) {
+        if (existingUser) {
             return res.status(400).json({
                 message: "User already exists"
             });
         }
 
+        // Hash password
         const hash = crypto
             .createHash("md5")
             .update(password)
             .digest("hex");
 
+        // Create user
         const user = await usermodel.create({
             username,
             email,
             password: hash
         });
 
-        const emailToken = jwt.sign(
-            {
-                id: user._id,
-                email: user.email
-            },
-            process.env.Jwt_Token
-        );
-
-        await sendEmail({
-            to: email,
-            subject: "Welcome to PerplexCity",
-            html: `
-                <p>Hi ${username}</p>
-                <p>Please verify your email by clicking the link below:</p>
-
-                <a href="http://localhost:3000/perplex/users/verify-email?token=${emailToken}">
-                    Verify Email
-                </a>
-            `
-        });
-
         return res.status(201).json({
-            message: "Registration successful. Please verify your email."
+            message: "Registration successful",
+            user
         });
 
     } catch (err) {
-        console.log(err);
+        console.log("REGISTER ERROR:", err);
 
         return res.status(500).json({
             message: "Internal Server Error"
@@ -64,55 +52,57 @@ async function Register(req, res) {
 }
 
 // Login
-async function Login(req, res) {
-    try {
-        const { email, password } = req.body;
+    async function Login(req, res) {
+        try {
+            const { email, password } = req.body;
 
-        const user = await usermodel.findOne({ email });
+            console.log("LOGIN BODY:", req.body);
 
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found"
+            const user = await usermodel.findOne({ email });
+
+            if (!user) {
+                return res.status(404).json({
+                    message: "User not found"
+                });
+            }
+
+            const hash = crypto
+                .createHash("md5")
+                .update(password)
+                .digest("hex");
+
+            if (user.password !== hash) {
+                return res.status(401).json({
+                    message: "Incorrect password"
+                });
+            }
+
+            const token = jwt.sign(
+                {
+                    id: user._id
+                },
+                process.env.Jwt_Token
+            );
+
+           res.cookie("token", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none"
+});
+
+            return res.status(200).json({
+                message: "Login successful",
+                user
+            });
+
+        } catch (err) {
+            console.log(err);
+
+            return res.status(500).json({
+                message: "Internal Server Error"
             });
         }
-
-        const hash = crypto
-            .createHash("md5")
-            .update(password)
-            .digest("hex");
-
-        if (user.password !== hash) {
-            return res.status(401).json({
-                message: "Incorrect password"
-            });
-        }
-
-        const token = jwt.sign(
-            {
-                id: user._id
-            },
-            process.env.Jwt_Token
-        );
-
-        res.cookie("token", token, {
-            httpOnly: true,
-            // secure: true, // enable in production (HTTPS)
-            // sameSite: "none" // if frontend/backend are on different domains
-        });
-
-        return res.status(200).json({
-            message: "Login successful",
-            user
-        });
-
-    } catch (err) {
-        console.log(err);
-
-        return res.status(500).json({
-            message: "Internal Server Error"
-        });
     }
-}
 // Get Logged-in User
 async function getme(req, res) {
 

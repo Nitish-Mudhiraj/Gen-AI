@@ -15,9 +15,7 @@ app.use(cors({
     credentials: true
 }));
 
-app.get("/wow", (req, res) => {
-    res.send("Gen-AI Backend is running successfully 🚀");
-});
+
 
 app.use("/perplex/users" ,authuser)
 app.use("/perplex/users/chat",authchat)
