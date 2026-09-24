@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState } from "react";
-import { getme } from "../api/auth"; // use your actual auth API path
+import { getme } from "./services/authservice";
 
 export const DataContext = createContext();
 

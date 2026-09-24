@@ -1,3 +1,9 @@
+import React, { useEffect } from 'react'
+
+import { useAuth } from '../Hooks/useAuth'
+import { Navigate } from 'react-router-dom'
+import { useauth } from '../../chat/useauth/Useauth'
+import Home from '../../chat/pages/Home';
 const Protected = () => {
 
     const { loading, userr } = useAuth();
@@ -20,3 +26,5 @@ const Protected = () => {
 
     return <Home />;
 };
+
+export default Protected
