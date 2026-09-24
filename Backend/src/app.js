@@ -11,10 +11,9 @@ app.use(cookieparser())
 app.use(express.json())
 
 app.use(cors({
-    origin:"https://gen-ai-iota-amber.vercel.app/",
-    credentials:true
-   
-}))
+    origin: "https://gen-ai-iota-amber.vercel.app",
+    credentials: true
+}));
 
 app.get("/wow", (req, res) => {
     res.send("Gen-AI Backend is running successfully 🚀");
