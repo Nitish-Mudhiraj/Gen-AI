@@ -4,7 +4,7 @@ let io;
  function inisocket(httpserver){
     io = new Server(httpserver,{
         cors:{
-            origin:"http://localhost:5173",
+            origin:"https://gen-ai-iota-amber.vercel.app",
             credentials:true
         }
     })

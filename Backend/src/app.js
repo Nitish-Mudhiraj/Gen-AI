@@ -11,7 +11,7 @@ app.use(cookieparser())
 app.use(express.json())
 
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:"https://gen-ai-iota-amber.vercel.app/",
     credentials:true
    
 }))
