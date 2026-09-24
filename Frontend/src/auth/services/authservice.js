@@ -40,7 +40,8 @@ export const login = async (email, password) => {
         return response.data;
 
     } catch (err) {
-        console.log(err);
+        console.log("API LOGIN ERROR:", err.response?.data || err);
+        throw err;
     }
 };
 

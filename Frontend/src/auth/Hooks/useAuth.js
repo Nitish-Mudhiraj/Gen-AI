@@ -21,20 +21,24 @@ export const useAuth = () => {
     }
   };
 
-  const HandleLogin = async(email, password) => {
+const HandleLogin = async (email, password) => {
     try {
-      setLoading(true);
+        setLoading(true);
 
-      const response = await login(email, password);
+        const response = await login(email, password);
 
-      setuser(response.user);
-     
-    }catch(err) {
-      console.log(err);
+        setuser(response.user);
+
+        return true;
+
+    } catch (err) {
+        console.log("LOGIN ERROR:", err.response?.data || err);
+        return false;
+
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const handlegetme = async() =>{
 
